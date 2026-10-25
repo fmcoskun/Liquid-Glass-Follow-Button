@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liquid Glass Follow Button</title>
+  <meta name="description" content="Premiere Pro 'Liquid Glass Lower Third 10' MOGRT takip butonunun HTML/CSS/SVG + Web Animations API yeniden yapımı." />
+  <!-- Referans: https://www.youtube.com/watch?v=-OAhOtf_rLs -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" />
+  <link rel="stylesheet" href="src/styles/base.css" />
+  <link rel="stylesheet" href="src/styles/liquid-glass.css" />
+  <script defer src="src/js/LiquidGlassTimeline.js"></script>
+  <script defer src="src/js/StudioInspector.js"></script>
+  <script defer src="src/js/main.js"></script>
+</head>
+<body>
+
+  <!-- Gerçek sıvı mercek kırılması: arka plan, gürültü haritasıyla yer değiştirir (Chromium backdrop-filter) -->
+  <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="liquid-refraction" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.032" numOctaves="2" seed="7" result="noise" />
+        <feGaussianBlur in="noise" stdDeviation="2" result="softNoise" />
+        <feDisplacementMap id="lgDisplacement" in="SourceGraphic" in2="softNoise" scale="18"
+                           xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="app">
+    <header class="app-bar">
+      <span class="app-bar__logo" aria-hidden="true">Mg</span>
+      <span class="app-bar__title">MOGRT Studio</span>
+      <span class="app-bar__file">Liquid Glass Lower Third 10.mogrt</span>
+      <span class="app-bar__keys" aria-hidden="true">
+        <kbd>Space</kbd> oynat · <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> faz · <kbd>L</kbd> döngü · <kbd>F</kbd> follow · <kbd>←</kbd><kbd>→</kbd> kare
+      </span>
+    </header>
+
+    <main class="workspace">
+      <!-- ── Program Monitor ── -->
+      <section class="panel monitor" aria-labelledby="monitorTitle">
+        <div class="panel-head">
+          <span id="monitorTitle">Program: Liquid Glass Lower Third 10</span>
+          <span class="panel-head__meta"><span class="timecode timecode--live" id="timecode">00:00:00:00</span></span>
+        </div>
+
+        <div class="viewport">
+          <div class="frame" id="stage" data-bg="mesh">
+            <div class="frame__mesh" aria-hidden="true">
+              <span class="blob blob--a"></span>
+              <span class="blob blob--b"></span>
+              <span class="blob blob--c"></span>
+              <span class="blob blob--d"></span>
+              <span class="frame__grid"></span>
+              <span class="frame__word">LIQUID GLASS</span>
+            </div>
+            <div class="frame__safe" aria-hidden="true"></div>
+
+            <!-- ── Liquid Glass Lower Third ── -->
+            <div class="lower-third" id="lowerThird">
+              <div class="lg-pill" id="lgPill" role="group" aria-label="Quick Edit Pro — takip bandı">
+                <span class="lg-pill__sheen" id="lgSheen" aria-hidden="true"></span>
+                <div class="lg-pill__content">
+                  <div class="lg-pill__text" id="lgText">
+                    <p class="lg-pill__title" id="lgTitle">Quick Edit Pro</p>
+                    <p class="lg-pill__subtitle" id="lgSubtitle">video editor</p>
+                  </div>
+                  <button class="lg-follow" id="lgFollow" type="button" aria-pressed="false">
+                    <span class="lg-follow__label" id="lgFollowLabel">Follow</span>
+                  </button>
+                </div>
+              </div>
+              <div class="lg-cursor" id="lgCursor" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="26" height="26">
+                  <path d="M4 2.5v17l4.6-4.1 3 6.6 3-1.3-2.9-6.4H18z" fill="#fff" stroke="#111"
+                        stroke-width="1.4" stroke-linejoin="round" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transport -->
+        <div class="transport" role="toolbar" aria-label="Oynatma kontrolleri">
+          <button class="t-btn t-btn--icon" type="button" data-transport="start" aria-label="Başa sar" title="Başa sar (Home)">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h1.6v11H3zM13 2.8v10.4L5.6 8z" /></svg>
+          </button>
+          <button class="t-btn t-btn--icon t-btn--primary" type="button" data-transport="toggle" aria-label="Oynat" title="Oynat / Duraklat (Space)">
+            <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11L13.5 8z" /></svg>
+            <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3.2v11H3.5zM9.3 2.5h3.2v11H9.3z" /></svg>
+          </button>
+          <span class="transport__sep" aria-hidden="true"></span>
+          <button class="t-btn t-btn--phase" type="button" data-transport="intro" title="Faz 1 (1)"><i class="dot dot--intro"></i>Intro</button>
+          <button class="t-btn t-btn--phase" type="button" data-transport="idle" title="Faz 2 (2)"><i class="dot dot--idle"></i>Idle</button>
+          <button class="t-btn t-btn--phase" type="button" data-transport="outro" title="Faz 3 (3)"><i class="dot dot--outro"></i>Outro</button>
+          <span class="transport__sep" aria-hidden="true"></span>
+          <button class="t-btn" type="button" data-transport="loop" title="Tam MOGRT (L)">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 4.5h6.2V2.6L14 5.4l-3.3 2.8V6.2H4.5a1.5 1.5 0 0 0-1.5 1.5v.8H1.4v-.8a3.1 3.1 0 0 1 3.1-3.2zm7 7H5.3v1.9L2 10.6l3.3-2.8v2h6.2A1.5 1.5 0 0 0 13 8.3v-.8h1.6v.8a3.1 3.1 0 0 1-3.1 3.2z" /></svg>
+            Full Loop
+          </button>
+          <span class="transport__duration">/ <span class="timecode" id="duration">00:00:05:15</span></span>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+          <div class="timeline__label" aria-hidden="true">V1</div>
+          <div class="timeline__lane">
+            <div class="timeline__ruler" id="timelineRuler" aria-hidden="true"></div>
+            <div class="timeline__track" id="timelineTrack" role="slider" tabindex="0"
+                 aria-label="Zaman çizelgesi oynatma kafası" aria-valuemin="0" aria-valuemax="5500"
+                 aria-valuenow="0" aria-valuetext="00:00:00:00">
+              <div class="playhead" id="playhead" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── MOGRT Studio Inspector (Premiere "Properties" paneli) ── -->
+      <aside class="panel inspector" id="inspector" aria-labelledby="inspectorTitle">
+        <div class="panel-head">
+          <span id="inspectorTitle">Properties</span>
+          <span class="panel-head__meta">Liquid Glass Lower Third 10</span>
+        </div>
+
+        <div class="inspector__body">
+          <details class="prop-group" open>
+            <summary>Text</summary>
+            <div class="prop">
+              <label class="prop__label" for="pText1">Text 1 <small>İsim</small></label>
+              <input class="prop__text" id="pText1" type="text" maxlength="40" autocomplete="off" spellcheck="false" data-key="name" />
+            </div>
+            <div class="prop">
+              <label class="prop__label" for="pText2">Text 2 <small>Unvan</small></label>
+              <input class="prop__text" id="pText2" type="text" maxlength="40" autocomplete="off" spellcheck="false" data-key="title" />
+            </div>
+            <div class="prop">
+              <label class="prop__label" for="pText3">Text 3 <small>Buton</small></label>
+              <input class="prop__text" id="pText3" type="text" maxlength="40" autocomplete="off" spellcheck="false" data-key="button" />
+            </div>
+            <div class="prop">
+              <label class="prop__label" for="pText3b">Text 3 <small>Takip edildi</small></label>
+              <input class="prop__text" id="pText3b" type="text" maxlength="40" autocomplete="off" spellcheck="false" data-key="buttonActive" />
+            </div>
+          </details>
+
+          <details class="prop-group" open>
+            <summary>Liquid Glass</summary>
+            <div class="prop prop--range">
+              <label class="prop__label" for="pBlur">Glass Blur</label>
+              <output class="prop__value" for="pBlur" data-out="blur" data-unit="px" data-decimals="0"></output>
+              <input class="prop__slider" id="pBlur" type="range" min="0" max="40" step="1" data-key="blur" />
+            </div>
+            <div class="prop prop--range">
+              <label class="prop__label" for="pRefraction">Refraction</label>
+              <output class="prop__value" for="pRefraction" data-out="refraction" data-unit="" data-decimals="0"></output>
+              <input class="prop__slider" id="pRefraction" type="range" min="0" max="60" step="1" data-key="refraction" />
+              <p class="prop__hint" data-refraction-note hidden>SVG backdrop kırılması yalnızca Chromium tabanlı tarayıcılarda (Chrome, Edge, OBS) çizilir.</p>
+            </div>
+            <div class="prop prop--range">
+              <label class="prop__label" for="pRim">Rim Intensity</label>
+              <output class="prop__value" for="pRim" data-out="rim" data-unit="×" data-decimals="2"></output>
+              <input class="prop__slider" id="pRim" type="range" min="0" max="1.6" step="0.05" data-key="rim" />
+            </div>
+            <div class="prop prop--range">
+              <label class="prop__label" for="pTint">Glass Tint</label>
+              <output class="prop__value" for="pTint" data-out="tint" data-unit="" data-decimals="2"></output>
+              <input class="prop__slider" id="pTint" type="range" min="0" max="0.85" step="0.01" data-key="tint" />
+            </div>
+            <div class="prop prop--range">
+              <label class="prop__label" for="pWidth">Pill Width</label>
+              <output class="prop__value" for="pWidth" data-out="width" data-unit="px" data-decimals="0"></output>
+              <input class="prop__slider" id="pWidth" type="range" min="320" max="600" step="2" data-key="width" />
+            </div>
+            <div class="prop prop--range">
+              <label class="prop__label" for="pRadius">Pill Radius</label>
+              <output class="prop__value" for="pRadius" data-out="radius" data-unit="px" data-decimals="0"></output>
+              <input class="prop__slider" id="pRadius" type="range" min="8" max="44" step="1" data-key="radius" />
+            </div>
+          </details>
+
+          <details class="prop-group" open>
+            <summary>Background</summary>
+            <fieldset class="segmented">
+              <legend class="sr-only">Arka plan modu</legend>
+              <label><input type="radio" name="bg" value="oled" data-key="background" /><span>OLED Siyah</span></label>
+              <label><input type="radio" name="bg" value="mesh" data-key="background" /><span>Renkli Mesh</span></label>
+              <label><input type="radio" name="bg" value="transparent" data-key="background" /><span>OBS Şeffaf</span></label>
+            </fieldset>
+          </details>
+
+          <details class="prop-group" open>
+            <summary>Motion</summary>
+            <label class="prop prop--toggle">
+              <span class="prop__label">Döngü <small>Full Loop tekrarlar</small></span>
+              <input class="switch" type="checkbox" data-key="loop" />
+            </label>
+            <label class="prop prop--toggle">
+              <span class="prop__label">Otomatik tıklama <small>2.7 sn'de imleç Follow'a basar</small></span>
+              <input class="switch" type="checkbox" data-key="autoFollow" />
+            </label>
+            <div class="prop">
+              <label class="prop__label" for="pMotion">Hareket tercihi</label>
+              <select class="prop__select" id="pMotion" data-key="motion">
+                <option value="system">Sistem ayarını izle</option>
+                <option value="reduce">Azaltılmış hareket (simüle et)</option>
+              </select>
+              <p class="prop__hint" data-motion-status></p>
+            </div>
+          </details>
+
+          <details class="prop-group">
+            <summary>Export · OBS Overlay</summary>
+            <div class="prop">
+              <label class="prop__label" for="pShare">Browser Source URL</label>
+              <div class="share">
+                <input class="prop__text share__url" id="pShare" type="text" readonly data-share-url />
+                <button class="t-btn" type="button" data-action="copy-obs">Kopyala</button>
+              </div>
+              <p class="prop__hint" data-share-status>Şeffaf arka planlı, yalnızca bileşeni gösteren bağlantı. OBS'de 1920×1080 Browser Source olarak ekleyin.</p>
+            </div>
+          </details>
+
+          <button class="t-btn inspector__reset" type="button" data-action="reset">Varsayılanlara dön</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="sr-only" id="srLive" aria-live="polite"></div>
+</body>
+</html>
