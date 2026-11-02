@@ -1,5 +1,9 @@
 # Liquid Glass Follow Button
 
+**🔗 Canlı yayın:** [fmcoskun.github.io/Liquid-Glass-Follow-Button](https://fmcoskun.github.io/Liquid-Glass-Follow-Button/)
+
+![Liquid Glass Follow Button — 5.5 sn animasyon](docs/demo.gif)
+
 Premiere Pro MOGRT'si **Quick Edit Pro — Liquid Glass Lower Third 10**'daki sıvı cam takip
 butonunun saf HTML5 + CSS3 + SVG filtreleri + Web Animations API ile yeniden yapımı.
 Referans video: [How to Create a Liquid Glass Follow Button in Premiere Pro (2026)](https://www.youtube.com/watch?v=-OAhOtf_rLs)
